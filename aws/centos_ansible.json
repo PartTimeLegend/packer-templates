@@ -1,0 +1,50 @@
+{
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "name": "{{ user `centos_7_with_ansible_ami_name` }}",
+            "ami_name": "{{ user `centos_7_with_ansible_ami_name` }}",
+            "communicator": "ssh",
+            "region": "{{ user `aws_region` }}",
+            "vpc_id": "{{ user `aws_build_vpc` }}",
+            "subnet_id": "{{ user `aws_build_subnet` }}",
+            "associate_public_ip_address": "{{user `aws_public_ip`}}",
+            "instance_type": "{{ user `centos_aws_instance_type` }}",
+            "source_ami": "{{ user `centos_7_with_ansible_aws_source_ami` }}",           
+            "ssh_username": "{{user `centos_7_with_ansible_ssh_user`}}",
+            "ssh_pty": "{{user `ssh_pty` }}",
+            "ssh_keypair_name" : "{{user `aws_keypair_name`}}",
+            "ssh_private_key_file": "{{user `aws_private_key_file`}}",
+            "run_tags": {
+                "Name": "packer-builder-{{ user `centos_7_with_ansible_ami_name` }}",
+                "builder": "packer",
+                "UUID": "{{ user `unique_id`}}",
+                "Instance_Stop": "#23:45 UTC weekend",
+                "Instance_Start": "#09:00 UTC weekday",
+                "CreatedBy": "Antony Bailey"
+            },
+            "tags": {
+                "Name": "{{ user `centos_7_with_ansible_ami_name` }}",
+                "UUID": "{{ user `unique_id`}}",
+                "builder": "packer",
+                "source_ami": "{{ user `centos_7_with_ansible_aws_source_ami` }}",
+                "CreatedBy": "Antony Bailey"
+            },
+            "iam_instance_profile": "{{user `aws_iam_instance_profile`}}",
+            "token": "{{user `aws_session_token`}}",
+            "profile": "{{ user `aws_profile`}}",
+            "ssh_timeout": "20m",
+            "ena_support" : true
+        }
+    ],
+    "provisioners": [
+    {
+        "type": "shell",
+        "scripts": 
+         [ 
+             "../scripts/linux/install/yum-epel.sh",
+             "../scripts/linux/install/yum-python.sh",
+             "../scripts/linux/install/yum-ansible.sh"
+         ]
+    }]
+}
